@@ -17,7 +17,7 @@ Each entry under `client_id` and `scopes` should be a unique substring within
 the FHIR server URL (for example, `cerner` or `epic`), with the value being the
 associated client ID to use or OAuth2 scopes to request.
 
-### Configuring Terminology (optiona)
+### Configuring Terminology (optional)
 The Scorecard App can optionally use terminology data. To configure the
 terminology data, follow these [instructions](https://github.com/fhir-crucible/fhir_scorecard#optional-terminology-support).
 
@@ -27,7 +27,7 @@ For example, on Mac OS X:
 ```
 brew install awsebcli
 ```
-Build and deploy the app
+Build and deploy the app:
 ```
 bundle install
 eb init
