@@ -1,0 +1,9 @@
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+# Mac OS X FS Junk
+**/.DS_Store
+# Config
+config.yml.bak
