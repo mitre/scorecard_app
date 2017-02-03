@@ -170,9 +170,8 @@ get '/fhir/OperationDefinition' do
   # Return Bundle containing static Completeness OperationDefinition
   op = FHIR.from_contents(ScorecardApp::Config::OPERATION_DEFINITION)
   bundle = FHIR::Bundle.new({'type'=>'searchset','total'=>1})
-  bundle.entry << FHIR::Bundle::Entry.new
+  bundle.entry << bundle_entry(op)
   bundle.entry.last.fullUrl = "#{request.base_url}/fhir/OperationDefinition/Patient-completeness"
-  bundle.entry.last.resource = op
   [200, {'Content-Type'=>'application/fhir+json;charset=utf-8'}, bundle.to_json]
 end
 
