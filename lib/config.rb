@@ -4,6 +4,10 @@ module ScorecardApp
     # Load the client_ids and scopes from a configuration file
     CONFIGURATION = YAML.load(File.open(File.join(File.dirname(File.absolute_path(__FILE__)),'..','config.yml'),'r:UTF-8',&:read))
 
+    # Load some static FHIR resources
+    CAPABILITY_STATEMENT = File.open(File.join(File.dirname(File.absolute_path(__FILE__)),'resources','capabilitystatement.json'),'r:UTF-8',&:read)
+    OPERATION_DEFINITION = File.open(File.join(File.dirname(File.absolute_path(__FILE__)),'resources','operationdefinition-completeness.json'),'r:UTF-8',&:read)
+
     # Given a URL, choose a client_id to use
     def self.get_client_id(url)
       return nil unless url

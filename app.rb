@@ -1,19 +1,31 @@
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
 require 'yaml'
 require 'sinatra'
+require 'sinatra/cross_origin'
 require 'fhir_client'
 require 'rest-client'
 require 'fhir_scorecard'
 
-Dir.glob(File.join(File.dirname(File.absolute_path(__FILE__)),'lib','**','*.rb')).each do |file|
+Dir.glob(File.join(File.dirname(File.absolute_path(__FILE__)),'lib','*.rb')).each do |file|
   require file
 end
 
+enable :cross_origin
+register Sinatra::CrossOrigin
 enable :sessions
 set :session_secret, SecureRandom.uuid
 
 puts "Loading terminology..."
 FHIR::Terminology.load_terminology
 puts "Finished loading terminology."
+
+# OPTIONS for CORS preflight requests
+options '*' do
+  response.headers['Allow'] = 'HEAD,GET,PUT,POST,DELETE,OPTIONS'
+  response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
+  200
+end
 
 # Root: redirect to /index
 get '/' do
@@ -25,7 +37,12 @@ get '/index' do
   bullets = {
     '/index' => 'this page',
     '/app' => 'the app (also the redirect_uri after authz)',
-    '/launch' => 'the launch url'
+    '/launch' => 'the launch url',
+    '/fhir' => 'FHIR API',
+    '/fhir/metadata' => 'FHIR CapabilityStatement',
+    '/fhir/OperationDefinition' => 'FHIR OperationDefinitions',
+    '/fhir/OperationDefinition/Patient-completeness' => 'FHIR Completeness Service OperationDefinition',
+    '/fhir/$completeness' => 'FHIR Completeness Service Endpoint'
   }
   response = ScorecardApp::Html.new
   body response.open.echo_hash('End Points',bullets).close
@@ -136,4 +153,36 @@ get '/launch' do
   response = ScorecardApp::Html.new
   content = response.open.echo_hash('params',params).echo_hash('OAuth2 Metadata',auth_info).close
   redirect oauth2_auth_query[0..-2], content
+end
+
+get '/fhir' do
+  redirect to('/fhir/metadata')
+end
+
+# FHIR CapabilityStatement
+get '/fhir/metadata' do
+  # Return Static CapabilityStatement
+  [200, {'Content-Type'=>'application/fhir+json;charset=utf-8'}, ScorecardApp::Config::CAPABILITY_STATEMENT]
+end
+
+# FHIR OperationDefinition
+get '/fhir/OperationDefinition' do
+  # Return Bundle containing static Completeness OperationDefinition
+  op = FHIR.from_contents(ScorecardApp::Config::OPERATION_DEFINITION)
+  bundle = FHIR::Bundle.new({'type'=>'searchset','total'=>1})
+  bundle.entry << FHIR::Bundle::Entry.new
+  bundle.entry.last.fullUrl = "#{request.base_url}/fhir/OperationDefinition/Patient-completeness"
+  bundle.entry.last.resource = op
+  [200, {'Content-Type'=>'application/fhir+json;charset=utf-8'}, bundle.to_json]
+end
+
+# FHIR Completeness Service OperationDefinition
+get '/fhir/OperationDefinition/Patient-completeness' do
+  # Return Static Completeness OperationDefinition
+  [200, {'Content-Type'=>'application/fhir+json;charset=utf-8'}, ScorecardApp::Config::OPERATION_DEFINITION]
+end
+
+# FHIR Completeness Service Endpoint
+post '/fhir/$completeness' do
+  # TODO Calculate operation and return the results
 end
