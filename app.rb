@@ -17,6 +17,7 @@ enable :sessions
 set :session_secret, SecureRandom.uuid
 
 puts "Loading terminology..."
+FHIR::Terminology.set_terminology_root(File.join(File.dirname(File.absolute_path(__FILE__)),'terminology').to_s)
 FHIR::Terminology.load_terminology
 puts "Finished loading terminology."
 
