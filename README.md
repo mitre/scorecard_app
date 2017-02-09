@@ -1,5 +1,7 @@
 # Scorecard App
-Scorecard App is a [SMART-on-FHIR App](http://smarthealthit.org/smart-on-fhir/) that computes a scorecard for an HL7&reg; FHIR&reg; Patient Record (represented as a Bundle).
+Scorecard App is a
+- [SMART-on-FHIR App](http://smarthealthit.org/smart-on-fhir/) that computes a scorecard for an HL7&reg; FHIR&reg; Patient Record (represented as a Bundle).
+- FHIR STU3 microservice that only supports a single Operation named `$completeness` that scores a patient record. JSON support only.
 
 ## Setup
 ```
@@ -7,19 +9,24 @@ git clone https://github.com/mitre/scorecard_app.git
 bundle install
 bundle exec ruby app.rb
 ```
+Access HTML at `http://localhost:4567`
 
-### Configuring Client ID and Scopes (required)
-OAuth2 client IDs and scopes for different FHIR servers can be stored in the
-`config.yml` file, so the deployed app can be used with multiple FHIR server
-implementations.
+The SMART launch and app urls are `http://localhost:4567/launch` and `http://localhost:4567/app` respectively.
+
+The FHIR microservice is accessible at `http://localhost:4567/fhir` and includes a `CapabilityStatement` at `/metadata` and a single `OperationDefinition` at `/OperationDefinition/$completeness` which is executable via `POST` at `/$completeness`.
+
+A sample request for the microservice is available in `/test/sample-request-parameters.json` and should be submitted with an HTTP content-type header of `application/fhir+json`.
+
+### Configuring Client ID and Scopes (required for SMART app)
+Use of the SMART-on-FHIR app requires that OAuth2 client IDs and scopes for different FHIR servers are stored in the
+`config.yml` file, so the deployed app can be used with multiple FHIR server implementations.
 
 Each entry under `client_id` and `scopes` should be a unique substring within
 the FHIR server URL (for example, `cerner` or `epic`), with the value being the
 associated client ID to use or OAuth2 scopes to request.
 
 ### Configuring Terminology (optional)
-The Scorecard App can optionally use terminology data. To configure the
-terminology data, follow these [instructions](https://github.com/fhir-crucible/fhir_scorecard#optional-terminology-support).
+The Scorecard App and microservice can optionally use terminology data. To configure the terminology data, follow these [instructions](https://github.com/fhir-crucible/fhir_scorecard#optional-terminology-support).
 
 ### Deploying to AWS Elastic Beanstalk (optional)
 Install the AWS Elastic Beanstalk Command Line Interface.
@@ -35,7 +42,7 @@ eb create scorecard-app-dev --sample
 eb deploy
 ```
 
-### Launching the App
+### Launching the SMART-on-FHIR App
 - Using Cerner Millenium
   1. Create an account on [code.cerner.com](https://code.cerner.com)
   - Register a "New App"
