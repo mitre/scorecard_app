@@ -1,4 +1,4 @@
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+# OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 require 'yaml'
 require 'sinatra'
@@ -163,7 +163,7 @@ end
 # FHIR CapabilityStatement
 get '/fhir/metadata' do
   # Return Static CapabilityStatement
-  [200, {'Content-Type'=>'application/fhir+json;charset=utf-8'}, ScorecardApp::Config::CAPABILITY_STATEMENT]
+  [200, ScorecardApp::Config::CONTENT_TYPE, ScorecardApp::Config::CAPABILITY_STATEMENT]
 end
 
 # FHIR OperationDefinition
@@ -173,16 +173,80 @@ get '/fhir/OperationDefinition' do
   bundle = FHIR::Bundle.new({'type'=>'searchset','total'=>1})
   bundle.entry << bundle_entry(op)
   bundle.entry.last.fullUrl = "#{request.base_url}/fhir/OperationDefinition/Patient-completeness"
-  [200, {'Content-Type'=>'application/fhir+json;charset=utf-8'}, bundle.to_json]
+  [200, ScorecardApp::Config::CONTENT_TYPE, bundle.to_json]
 end
 
 # FHIR Completeness Service OperationDefinition
 get '/fhir/OperationDefinition/Patient-completeness' do
   # Return Static Completeness OperationDefinition
-  [200, {'Content-Type'=>'application/fhir+json;charset=utf-8'}, ScorecardApp::Config::OPERATION_DEFINITION]
+  [200, ScorecardApp::Config::CONTENT_TYPE, ScorecardApp::Config::OPERATION_DEFINITION]
 end
 
 # FHIR Completeness Service Endpoint
 post '/fhir/$completeness' do
-  # TODO Calculate operation and return the results
+  # Check the input
+  payload = request.body.read
+  begin
+    parameters = FHIR.from_contents(payload)
+    is_parameters = parameters.is_a?(FHIR::Parameters)
+    has_param = is_parameters && !parameters.parameter.empty? && parameters.parameter.length==1 && parameters.parameter.first.name == 'record'
+    param_is_bundle = has_param && parameters.parameter.first.resource.is_a?(FHIR::Bundle)
+    valid = is_parameters && has_param && param_is_bundle
+    bad_input = !valid
+  rescue => e
+    puts 'Failed to parse request to $completeness service.'
+    puts e
+    parameters = nil
+    bad_input = true
+  end
+  if !request.content_type.start_with?('application/fhir+json')
+    # We only support JSON
+    error = FHIR::OperationOutcome.new
+    error.issue << FHIR::OperationOutcome::Issue.new
+    error.issue.last.severity = 'error'
+    error.issue.last.code = 'not-supported'
+    error.issue.last.diagnostics = "The content-type `#{request.content_type}` is not supported. This service only supports `application/fhir+json`."
+    response_code = 422
+    response_body = error.to_json
+  elsif bad_input
+    # We only support the $completeness parameters exactly
+    error = FHIR::OperationOutcome.new
+    error.issue << FHIR::OperationOutcome::Issue.new
+    error.issue.last.severity = 'error'
+    error.issue.last.code = 'required'
+    error.issue.last.diagnostics = 'This operation requires a FHIR Parameters Resource containing a single parameter named `record` containing a FHIR Bundle.'
+    response_code = 422
+    response_body = error.to_json
+  else
+    # Calculate completeness scorecard
+    scorecard = FHIR::Scorecard.new
+    scorecard_report = scorecard.score(parameters.parameter.first.resource.to_json)
+
+    # Create the response
+    reply = FHIR::Parameters.new
+    reply.parameter << create_parameter('score', scorecard_report.delete(:points))
+    scorecard_report.each do |rubric, data|
+      reply.parameter << create_parameter('rubric')
+      reply.parameter.last.part << create_parameter('score', data[:points])
+      reply.parameter.last.part << create_parameter('category', rubric.to_s)
+      reply.parameter.last.part << create_parameter('description', data[:message])
+    end
+
+    response_code = 200
+    response_body = reply.to_json
+  end
+
+  # Return the results
+  [response_code, ScorecardApp::Config::CONTENT_TYPE, response_body]
+end
+
+def create_parameter(name,value=nil)
+  parameter = FHIR::Parameters::Parameter.new
+  parameter.name = name
+  if value.is_a?(Numeric)
+    parameter.valueInteger = value
+  else
+    parameter.valueString = value
+  end
+  parameter
 end

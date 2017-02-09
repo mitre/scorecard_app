@@ -1,6 +1,8 @@
 module ScorecardApp
   class Config
 
+    CONTENT_TYPE = {'Content-Type'=>'application/fhir+json;charset=utf-8'}
+
     # Load the client_ids and scopes from a configuration file
     CONFIGURATION = YAML.load(File.open(File.join(File.dirname(File.absolute_path(__FILE__)),'..','config.yml'),'r:UTF-8',&:read))
 
