@@ -1,0 +1,69 @@
+{
+  "id": "Patient-completeness",
+  "url": "http://hl7.org/fhir/OperationDefinition/Patient-completeness",
+  "name": "Patient Record Completeness Service",
+  "status": "draft",
+  "kind": "operation",
+  "experimental": true,
+  "date": "2016-10-27T18:11:25-04:00",
+  "publisher": "The MITRE Corporation and the Office of the National Coordinator for Health Information Technology (ONC)",
+  "description": "A Patient Record Completeness Service determines if a Patient's Healthcare Record is complete. The Patient's Healthcare Record is represented as a FHIR Bundle, similar to what is returned from the $everything operation. The notion of completeness includes: are the expected resources present, do those resources have the expected fields populated, are things coded properly, is the data current, what is the provenance of the data, as well as advanced clinical reasoning (e.g. given a Patient with a certain Condition, one expects to see associated Medications, Procedures, or CarePlans).",
+  "requirements": "The inputs required to determine 'completeness' are similar to the output of the $everything operation. Additionally, determining if data is correctly coded may take advantage of terminology services. Server-side support for $everything and terminology services is therefore advantageous.",
+  "idempotent": true,
+  "code": "completeness",
+  "system": false,
+  "type": [
+    "Patient"
+  ],
+  "instance": true,
+  "parameter": [
+    {
+      "name": "record",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "The Patient's Healthcare Record represented as a FHIR Bundle, similar to what is returned from the $everything operation.",
+      "type": "Bundle"
+    },
+    {
+      "name": "score",
+      "use": "out",
+      "min": 1,
+      "max": "1",
+      "documentation": "A score of the record's 'completeness' as determined by summing the scores of the various rubrics used in evaluating the record.",
+      "type": "integer"
+    },
+    {
+      "name": "rubric",
+      "use": "out",
+      "min": 0,
+      "max": "*",
+      "documentation": "The results of a single scoring rubric.",
+      "part": [
+        {
+          "name": "score",
+          "use": "out",
+          "min": 1,
+          "max": "1",
+          "documentation": "The score awarded for this rubric.",
+          "type": "integer"
+        },
+        {
+          "name": "category",
+          "use": "out",
+          "min": 1,
+          "max": "1",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "use": "out",
+          "min": 0,
+          "max": "1",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "resourceType": "OperationDefinition"
+}
