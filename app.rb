@@ -223,9 +223,9 @@ post '/fhir/$completeness' do
   else
     # Calculate completeness scorecard
     scorecard = FHIR::Scorecard.new
-    if use_ig == 'uscore'
+    if use_ig == 'us_core'
       scorecard.enable_us_core
-    elsif use_ig == 'shr'
+    elsif use_ig == 'standard_health_record'
       scorecard.enable_shr
     end
     scorecard_report = scorecard.score(parameters.parameter.first.resource.to_json)

@@ -2932,7 +2932,7 @@
     },
     {
       "name": "ig",
-      "valueCode": "shr"
+      "valueCode": "standard_health_record"
     }
   ],
   "resourceType": "Parameters"
