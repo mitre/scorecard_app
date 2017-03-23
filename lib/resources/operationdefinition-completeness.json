@@ -20,10 +20,18 @@
     {
       "name": "record",
       "use": "in",
-      "min": 0,
+      "min": 1,
       "max": "1",
       "documentation": "The Patient's Healthcare Record represented as a FHIR Bundle, similar to what is returned from the $everything operation.",
       "type": "Bundle"
+    },
+    {
+      "name": "ig",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "Optional Implementation Guide to use to validate resources in the record. Supports `us_core` for US Core or `standard_health_record` for the Standard Health Record.",
+      "type": "code"
     },
     {
       "name": "score",

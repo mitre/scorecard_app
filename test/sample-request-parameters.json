@@ -2929,6 +2929,10 @@
         ],
         "resourceType": "Bundle"
       }
+    },
+    {
+      "name": "ig",
+      "valueCode": "standard_health_record"
     }
   ],
   "resourceType": "Parameters"

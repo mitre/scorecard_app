@@ -1,7 +1,7 @@
 # Scorecard App
 Scorecard App is a
 - [SMART-on-FHIR App](http://smarthealthit.org/smart-on-fhir/) that computes a scorecard for an HL7&reg; FHIR&reg; Patient Record (represented as a Bundle).
-- FHIR STU3 microservice that only supports a single Operation named `$completeness` that scores a patient record. JSON support only.
+- FHIR STU3 (v1.8) microservice that only supports a single Operation named `$completeness` that scores a patient record. JSON support only.
 
 ## Setup
 ```
@@ -9,13 +9,22 @@ git clone https://github.com/mitre/scorecard_app.git
 bundle install
 bundle exec ruby app.rb
 ```
+
+## FHIR $completeness microservice
+
+Access the FHIR microservice at `http://localhost:4567/fhir`
+
+The FHIR microservice includes a `CapabilityStatement` at `/metadata` and a single `OperationDefinition` at `/OperationDefinition/$completeness` which is executable via `POST` at `/$completeness`.
+
+A sample request for the microservice is available in `/test/sample-request-parameters.json` and should be submitted with an HTTP content-type header of `application/fhir+json`.
+
+You can optionally enable Implementation Guide (IG) validation of the submitted record using the `ig` parameter. Allowable codes are `us_core` and `standard_health_record`.
+
+## SMART-on-FHIR App
+
 Access HTML at `http://localhost:4567`
 
 The SMART launch and app urls are `http://localhost:4567/launch` and `http://localhost:4567/app` respectively.
-
-The FHIR microservice is accessible at `http://localhost:4567/fhir` and includes a `CapabilityStatement` at `/metadata` and a single `OperationDefinition` at `/OperationDefinition/$completeness` which is executable via `POST` at `/$completeness`.
-
-A sample request for the microservice is available in `/test/sample-request-parameters.json` and should be submitted with an HTTP content-type header of `application/fhir+json`.
 
 ### Configuring Client ID and Scopes (required for SMART app)
 Use of the SMART-on-FHIR app requires that OAuth2 client IDs and scopes for different FHIR servers are stored in the

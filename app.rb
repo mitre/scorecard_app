@@ -189,9 +189,12 @@ post '/fhir/$completeness' do
   begin
     parameters = FHIR.from_contents(payload)
     is_parameters = parameters.is_a?(FHIR::Parameters)
-    has_param = is_parameters && !parameters.parameter.empty? && parameters.parameter.length==1 && parameters.parameter.first.name == 'record'
-    param_is_bundle = has_param && parameters.parameter.first.resource.is_a?(FHIR::Bundle)
-    valid = is_parameters && has_param && param_is_bundle
+    has_record = is_parameters && !parameters.parameter.empty? && parameters.parameter.length>=1 && parameters.parameter.first.name == 'record'
+    has_ig = is_parameters && !parameters.parameter.empty? && parameters.parameter.length==2 && parameters.parameter.last.name == 'ig'
+    ig_is_code = has_ig && parameters.parameter.last.valueCode
+    use_ig = parameters.parameter.last.valueCode if has_ig && ig_is_code
+    record_is_bundle = has_record && parameters.parameter.first.resource.is_a?(FHIR::Bundle)
+    valid = is_parameters && has_record && record_is_bundle
     bad_input = !valid
   rescue => e
     puts 'Failed to parse request to $completeness service.'
@@ -199,7 +202,7 @@ post '/fhir/$completeness' do
     parameters = nil
     bad_input = true
   end
-  if !request.content_type.start_with?('application/fhir+json')
+  if request.content_type && !request.content_type.start_with?('application/fhir+json')
     # We only support JSON
     error = FHIR::OperationOutcome.new
     error.issue << FHIR::OperationOutcome::Issue.new
@@ -220,6 +223,11 @@ post '/fhir/$completeness' do
   else
     # Calculate completeness scorecard
     scorecard = FHIR::Scorecard.new
+    if use_ig == 'us_core'
+      scorecard.enable_us_core
+    elsif use_ig == 'standard_health_record'
+      scorecard.enable_shr
+    end
     scorecard_report = scorecard.score(parameters.parameter.first.resource.to_json)
 
     # Create the response
