@@ -202,7 +202,7 @@ post '/fhir/$completeness' do
     parameters = nil
     bad_input = true
   end
-  if !request.content_type.start_with?('application/fhir+json')
+  if request.content_type && !request.content_type.start_with?('application/fhir+json')
     # We only support JSON
     error = FHIR::OperationOutcome.new
     error.issue << FHIR::OperationOutcome::Issue.new
