@@ -1,7 +1,10 @@
 # Scorecard App
+
+> This project has been archived and is no longer actively maintained or supported. Please contact opensource@mitre.org with any questions.
+
 Scorecard App is a
 - [SMART-on-FHIR App](http://smarthealthit.org/smart-on-fhir/) that computes a scorecard for an HL7&reg; FHIR&reg; Patient Record (represented as a Bundle).
-- FHIR STU3 (v1.8) microservice that only supports a single Operation named `$completeness` that scores a patient record. JSON support only.
+- FHIR STU3 (v3.0.1) microservice that only supports a single Operation named `$completeness` that scores a patient record. JSON support only.
 
 ## Setup
 ```
@@ -76,7 +79,7 @@ configuration of the client ID and scopes.
 
 ## License
 
-Copyright 2016 The MITRE Corporation
+Copyright 2016-2018 The MITRE Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
