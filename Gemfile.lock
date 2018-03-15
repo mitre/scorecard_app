@@ -1,45 +1,13 @@
-GIT
-  remote: https://github.com/fhir-crucible/fhir_client.git
-  revision: e02c5a40cd9237d6772fd5b460c0edf56ef02520
-  branch: profiling
-  specs:
-    fhir_client (1.8.0)
-      activesupport (>= 3)
-      addressable (>= 2.3)
-      nokogiri
-      oauth2 (~> 1.1)
-      rack (>= 1.5)
-      rest-client (~> 1.8)
-      tilt (>= 1.1)
-
-GIT
-  remote: https://github.com/fhir-crucible/fhir_models.git
-  revision: 4e8073cd1f8eb3e6c639d611f90ea578b648eb23
-  branch: profiling
-  specs:
-    fhir_models (1.8.2)
-      bcp47 (>= 0.3)
-      date_time_precision (>= 0.8)
-      mime-types (>= 1.16, < 3)
-      nokogiri (>= 1.6)
-
-GIT
-  remote: https://github.com/fhir-crucible/fhir_scorecard.git
-  revision: 0a5cf152803bfafebebc6f838fd2a30abb6a8c05
-  branch: profile_validations
-  specs:
-    fhir_scorecard (1.8.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.0.2)
+    activesupport (5.1.5)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.5.0)
-      public_suffix (~> 2.0, >= 2.0.2)
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     bcp47 (0.3.3)
       i18n
     concurrent-ruby (1.0.5)
@@ -48,47 +16,66 @@ GEM
     domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
     eventmachine (1.2.2)
-    faraday (0.11.0)
+    faraday (0.12.2)
       multipart-post (>= 1.2, < 3)
+    fhir_client (3.0.1)
+      activesupport (>= 3)
+      addressable (>= 2.3)
+      fhir_models (>= 3.0.0)
+      nokogiri
+      oauth2 (~> 1.1)
+      rack (>= 1.5)
+      rest-client (~> 1.8)
+      tilt (>= 1.1)
+    fhir_models (3.0.2)
+      bcp47 (>= 0.3)
+      date_time_precision (>= 0.8)
+      mime-types (>= 1.16)
+      nokogiri (>= 1.6)
+    fhir_scorecard (3.0.1)
+      fhir_models (>= 3.0.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (0.8.1)
+    i18n (0.9.5)
+      concurrent-ruby (~> 1.0)
     jwt (1.5.6)
     mime-types (2.99.3)
-    mini_portile2 (2.1.0)
-    minitest (5.10.1)
-    multi_json (1.12.1)
+    mini_portile2 (2.3.0)
+    minitest (5.11.3)
+    multi_json (1.13.1)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
+    mustermann (1.0.2)
     netrc (0.11.0)
-    nokogiri (1.7.1)
-      mini_portile2 (~> 2.1.0)
-    oauth2 (1.3.1)
-      faraday (>= 0.8, < 0.12)
+    nokogiri (1.8.2)
+      mini_portile2 (~> 2.3.0)
+    oauth2 (1.4.0)
+      faraday (>= 0.8, < 0.13)
       jwt (~> 1.0)
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
-    public_suffix (2.0.5)
-    rack (1.6.5)
-    rack-protection (1.5.3)
+    public_suffix (3.0.2)
+    rack (2.0.4)
+    rack-protection (2.0.1)
       rack
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    sinatra (1.4.8)
-      rack (~> 1.5)
-      rack-protection (~> 1.4)
-      tilt (>= 1.3, < 3)
+    sinatra (2.0.1)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.1)
+      tilt (~> 2.0)
     sinatra-cross_origin (0.4.0)
     thin (1.7.0)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
       rack (>= 1, < 3)
     thread_safe (0.3.6)
-    tilt (2.0.6)
-    tzinfo (1.2.2)
+    tilt (2.0.8)
+    tzinfo (1.2.5)
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
@@ -98,13 +85,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  fhir_client!
-  fhir_models!
-  fhir_scorecard!
+  fhir_client
+  fhir_scorecard
   rest-client
   sinatra
   sinatra-cross_origin
   thin
 
 BUNDLED WITH
-   1.13.6
+   1.16.0
